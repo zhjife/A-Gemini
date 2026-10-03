@@ -14,31 +14,22 @@ jobs:
         uses: actions/checkout@v4
 
       - name: 配置 JDK 17 环境
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: 赋予 gradlew 执行权限
-        run: |
-          # 自动寻找仓库里的 gradlew 文件并赋予执行权限
-          find . -name "gradlew" -exec chmod +x {} +
+      - name: 安装并配置官方 Gradle 环境
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.4' # 提供适配当前 Android Gradle 插件的稳定版本
 
-      - name: 编译 Debug 版 APK
-        run: |
-          # 如果 gradlew 在根目录直接运行，如果在子目录则进入子目录运行
-          if [ -f "./gradlew" ]; then
-            ./gradlew assembleDebug --stacktrace
-          elif [ -f "./android/gradlew" ]; then
-            cd android && ./gradlew assembleDebug --stacktrace
-          else
-            echo "错误：仓库中没有找到 gradlew 文件！请检查仓库文件结构。"
-            exit 1
-          fi
+      - name: 编译生成 Debug 版 APK
+        run: gradle assembleDebug --stacktrace
 
-      - name: 上传打包生成的 APK
+      - name: 上传打包好的 APK 安装包
         uses: actions/upload-artifact@v4
         with:
           name: app-debug-apk
-          path: "**/build/outputs/apk/debug/*.apk"
+          path: app/build/outputs/apk/debug/*.apk
           if-no-files-found: error
