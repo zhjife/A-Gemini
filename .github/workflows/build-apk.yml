@@ -13,16 +13,26 @@ jobs:
       - name: 检出代码
         uses: actions/checkout@v4
 
-      - name: 配置 JDK 17 环境
+      - name: 配置 JDK 21 环境（匹配新版 Android 插件）
         uses: actions/setup-java@v4
         with:
-          java-version: '17'
+          java-version: '21'
           distribution: 'temurin'
 
-      - name: 安装并配置官方 Gradle 环境
+      - name: 补齐基础配置文件
+        run: |
+          if [ -f ".env.example" ] && [ ! -f ".env" ]; then
+            cp .env.example .env
+          fi
+          echo "sdk.dir=$ANDROID_HOME" > local.properties
+
+      - name: 接受 Android SDK 协议
+        run: yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || true
+
+      - name: 安装项目指定的 Gradle 9.3.1
         uses: gradle/actions/setup-gradle@v4
         with:
-          gradle-version: '8.4' # 提供适配当前 Android Gradle 插件的稳定版本
+          gradle-version: '9.3.1'
 
       - name: 编译生成 Debug 版 APK
         run: gradle assembleDebug --stacktrace
