@@ -1,0 +1,6 @@
+{
+  "name": "A股量化选股与AI投研",
+  "description": "无服务器直连东财行情，硬核排雷、多周期共振雷达、AI秒级诊断与持仓移动止盈助手",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
